@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 170" width="40" height="57">
+  <defs>
+    <linearGradient id="silver" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="55%" stop-color="#f5dce4" />
+      <stop offset="100%" stop-color="#d4a0b3" />
+    </linearGradient>
+    
+    <radialGradient id="gemGrad" cx="35%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#ffe0ec" />
+      <stop offset="55%" stop-color="#f06292" />
+      <stop offset="100%" stop-color="#d4497a" />
+    </radialGradient>
+  </defs>
+
+  <rect x="55" y="70" width="10" height="90" rx="5" fill="url(#silver)"></rect>
+  
+  <circle cx="60" cy="160" r="9" fill="none" stroke="url(#silver)" stroke-width="7"></circle>
+  
+  <path d="M60 8 L69 44 L106 52 L69 60 L60 96 L51 60 L14 52 L51 44 Z" fill="url(#silver)"></path>
+  
+  <circle class="gem" cx="60" cy="52" r="11" fill="url(#gemGrad)"></circle>
+</svg>

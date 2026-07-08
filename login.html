@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In — Inkora</title>
+  <meta name="description" content="Sign in or create your Inkora account to shop kawaii stationery, bags and accessories.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DynaPuff:wght@400..700&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,560;0,9..144,680;1,9..144,500&family=Fredoka:wght@300..700&family=Manrope:wght@400;500;600;700;800&family=Mrs+Saint+Delafield&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --sky-1: #fdf2f5;
+      --sky-2: #fce4ec;
+      --sky-3: #f8bbd0;
+      --cloud: #ffffff;
+      --ink: #2c1f2e;
+      --ink-soft: #6b5570;
+      --ink-faint: #9c8a9f;
+      --paper: #fffbfc;
+      --line: #f0e0e6;
+      --accent: #e8729a;
+      --accent-deep: #d4497a;
+      --accent-glow: #fbb4cc;
+      --lilac: #dcb8e8;
+      --rose: #f3cbdb;
+      --silver-1: #fdf5f7;
+      --danger: #e74c3c;
+      --danger-bg: #fdf0ef;
+      --success: #27ae60;
+      --shadow-sm: 0 2px 10px rgba(28, 35, 51, 0.06);
+      --shadow-md: 0 14px 34px rgba(28, 35, 51, 0.10);
+      --shadow-lg: 0 30px 70px rgba(28, 35, 51, 0.16);
+      --radius-sm: 10px;
+      --radius-md: 18px;
+      --radius-lg: 28px;
+      --ease: cubic-bezier(.22, .9, .32, 1);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      font-family: 'Manrope', sans-serif;
+      color: var(--ink);
+      background: var(--paper);
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      cursor: none;
+    }
+
+    img, svg { display: block; max-width: 100%; }
+    a { color: inherit; text-decoration: none; cursor: none; }
+    button { font-family: inherit; cursor: none; }
+    h1, h2, h3 { margin: 0; font-family: 'Fraunces', serif; }
+    p { margin: 0; }
+
+    /* ============ NAV ============ */
+    .nav {
+      position: sticky; top: 0; z-index: 60;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 28px;
+      background: rgba(251, 252, 254, .72);
+      backdrop-filter: blur(14px) saturate(1.4);
+      border-bottom: 1px solid rgba(28, 35, 51, .06);
+    }
+
+    .logo {
+      font-family: 'Mrs Saint Delafield', cursive;
+      font-size: 34px; line-height: 1;
+      color: var(--ink);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .logo svg { width: 24px; height: 24px; }
+
+    .nav-links { display: flex; gap: 34px; align-items: center; }
+    .nav-links a { font-size: 14.5px; font-weight: 600; color: var(--ink-soft); transition: color .2s; }
+    .nav-links a:hover, .nav-links a.active { color: var(--ink); }
+
+    .nav-right { display: flex; align-items: center; gap: 14px; }
+
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 14px 26px; border-radius: 999px; border: none;
+      font-weight: 700; font-size: 15px; letter-spacing: .01em;
+      transition: transform .25s var(--ease), box-shadow .25s var(--ease), background .25s var(--ease);
+    }
+    .btn-primary { background: var(--ink); color: #fff; box-shadow: var(--shadow-sm); }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+    .btn-accent {
+      background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+      color: #fff; box-shadow: 0 10px 24px rgba(212, 73, 122, .30);
+    }
+    .btn-accent:hover { transform: translateY(-2px); box-shadow: 0 14px 30px rgba(212, 73, 122, .42); }
+    .btn-sm { padding: 9px 16px; font-size: 13px; }
+
+    .nav-toggle {
+      display: none; width: 40px; height: 40px; border-radius: 50%;
+      background: var(--silver-1); border: 1px solid var(--line);
+      align-items: center; justify-content: center; cursor: pointer;
+      position: relative; z-index: 70;
+    }
+    .nav-toggle span {
+      display: block; width: 18px; height: 2px; background: var(--ink);
+      border-radius: 2px; position: relative; transition: background .2s;
+    }
+    .nav-toggle span::before, .nav-toggle span::after {
+      content: ''; position: absolute; left: 0; width: 100%; height: 2px;
+      background: var(--ink); border-radius: 2px;
+      transition: transform .3s var(--ease), top .3s var(--ease);
+    }
+    .nav-toggle span::before { top: -6px; }
+    .nav-toggle span::after { top: 6px; }
+    .nav-toggle.active span { background: transparent; }
+    .nav-toggle.active span::before { top: 0; transform: rotate(45deg); }
+    .nav-toggle.active span::after { top: 0; transform: rotate(-45deg); }
+
+    .mobile-nav-overlay {
+      position: fixed; inset: 0; background: rgba(20, 24, 36, .42);
+      backdrop-filter: blur(2px); z-index: 55; opacity: 0; pointer-events: none;
+      transition: opacity .3s var(--ease);
+    }
+    .mobile-nav-overlay.open { opacity: 1; pointer-events: auto; }
+
+    .mobile-nav {
+      position: fixed; top: 0; right: 0; height: 100%; width: min(320px, 85vw);
+      background: #fff; z-index: 58; box-shadow: -10px 0 40px rgba(20, 24, 36, .15);
+      transform: translateX(100%); transition: transform .38s var(--ease);
+      display: flex; flex-direction: column; padding: 90px 32px 32px; gap: 8px;
+    }
+    .mobile-nav.open { transform: translateX(0); }
+    .mobile-nav a {
+      font-size: 18px; font-weight: 600; color: var(--ink-soft);
+      padding: 14px 0; border-bottom: 1px solid var(--line); transition: color .2s;
+    }
+    .mobile-nav a:hover, .mobile-nav a.active { color: var(--ink); }
+
+    @media (max-width:860px) {
+      .nav-links { display: none; }
+      .nav-toggle { display: flex; }
+    }
+
+    /* ============ AUTH PAGE LAYOUT ============ */
+    .auth-page {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px 80px;
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(165deg, #fffbfc 0%, #fdf2f5 30%, #fce4ec 70%, #f8bbd0 100%);
+    }
+
+    .auth-page::before {
+      content: '';
+      position: absolute;
+      width: 600px; height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(232, 114, 154, .12), transparent 65%);
+      top: -200px; right: -100px;
+      pointer-events: none;
+    }
+
+    .auth-page::after {
+      content: '';
+      position: absolute;
+      width: 400px; height: 400px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(220, 184, 232, .15), transparent 65%);
+      bottom: -120px; left: -60px;
+      pointer-events: none;
+    }
+
+    .auth-ghost {
+      font-family: 'Mrs Saint Delafield', cursive;
+      font-size: clamp(100px, 18vw, 220px);
+      color: rgba(255,255,255,0.5);
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      white-space: nowrap;
+      pointer-events: none; user-select: none;
+      z-index: 0;
+    }
+
+    /* ============ AUTH CARD ============ */
+    .auth-card {
+      position: relative; z-index: 1;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      width: 100%;
+      max-width: 440px;
+      overflow: hidden;
+    }
+
+    .auth-header {
+      padding: 32px 34px 0;
+      text-align: center;
+    }
+
+    .auth-header .auth-logo {
+      font-family: 'Mrs Saint Delafield', cursive;
+      font-size: 38px;
+      color: var(--ink);
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      margin-bottom: 6px;
+    }
+    .auth-header .auth-logo svg { width: 22px; height: 22px; }
+
+    .auth-header p {
+      font-size: 14px; color: var(--ink-soft); margin-top: 4px;
+    }
+
+    /* Tabs */
+    .auth-tabs {
+      display: flex;
+      margin: 20px 34px 0;
+      border: 1.5px solid var(--line);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .auth-tab {
+      flex: 1;
+      padding: 11px 0;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 700;
+      border: none;
+      background: transparent;
+      color: var(--ink-soft);
+      cursor: pointer;
+      transition: all .25s var(--ease);
+      position: relative;
+    }
+    .auth-tab.active {
+      background: var(--ink);
+      color: #fff;
+      border-radius: 999px;
+    }
+
+    /* Form body */
+    .auth-body {
+      padding: 24px 34px 32px;
+      position: relative;
+      min-height: 320px;
+    }
+
+    .auth-form {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      animation: fadeSlide .35s var(--ease);
+    }
+
+    .auth-form.hidden { display: none; }
+
+    @keyframes fadeSlide {
+      0% { opacity: 0; transform: translateY(8px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    .field {
+      display: flex; flex-direction: column; gap: 5px;
+    }
+    .field label {
+      font-size: 12.5px; font-weight: 700; color: var(--ink-soft);
+    }
+    .field input {
+      padding: 12px 14px; border-radius: var(--radius-sm);
+      border: 1.5px solid var(--line); font-size: 14px;
+      font-family: inherit; background: var(--silver-1);
+      transition: border-color .2s, background .2s, box-shadow .2s;
+    }
+    .field input:focus {
+      border-color: var(--accent-deep);
+      outline: none;
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(212, 73, 122, .08);
+    }
+    .field input.error {
+      border-color: var(--danger); background: var(--danger-bg);
+    }
+    .field .field-error {
+      font-size: 11.5px; color: var(--danger); font-weight: 600;
+      min-height: 16px;
+    }
+
+    .field-row { display: flex; gap: 12px; }
+    .field-row .field { flex: 1; }
+
+    .pwd-wrap {
+      position: relative;
+    }
+    .pwd-wrap input { width: 100%; padding-right: 42px; }
+    .pwd-toggle {
+      position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; color: var(--ink-faint);
+      display: flex; align-items: center; padding: 4px;
+      transition: color .2s;
+    }
+    .pwd-toggle:hover { color: var(--ink); }
+
+    .auth-submit {
+      width: 100%;
+      margin-top: 4px;
+    }
+
+    .auth-submit.loading { pointer-events: none; opacity: .7; }
+    .auth-submit.loading::after {
+      content: ''; width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,.3); border-top-color: #fff;
+      border-radius: 50%; animation: spin .6s linear infinite; margin-left: 8px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .forgot-link {
+      font-size: 12.5px; color: var(--accent-deep); font-weight: 600;
+      text-align: right; display: block; margin-top: -4px;
+      transition: color .2s;
+    }
+    .forgot-link:hover { color: var(--ink); }
+
+    /* Divider */
+    .auth-divider {
+      display: flex; align-items: center; gap: 14px;
+      margin: 6px 0;
+    }
+    .auth-divider::before, .auth-divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--line);
+    }
+    .auth-divider span {
+      font-size: 11.5px; color: var(--ink-faint); font-weight: 600;
+      text-transform: uppercase; letter-spacing: .06em;
+    }
+
+    /* Social login buttons */
+    .social-btns {
+      display: flex; gap: 10px;
+    }
+    .social-btn {
+      flex: 1; padding: 10px; border-radius: var(--radius-sm);
+      border: 1.5px solid var(--line); background: #fff;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      font-size: 13px; font-weight: 700; color: var(--ink-soft);
+      transition: all .2s var(--ease);
+    }
+    .social-btn:hover {
+      border-color: var(--ink-soft); transform: translateY(-1px);
+      box-shadow: var(--shadow-sm);
+    }
+    .social-btn svg { width: 18px; height: 18px; }
+
+    /* Footer text */
+    .auth-footer {
+      text-align: center;
+      padding: 0 34px 26px;
+      font-size: 12.5px;
+      color: var(--ink-faint);
+    }
+    .auth-footer a {
+      color: var(--accent-deep); font-weight: 700;
+    }
+    .auth-footer a:hover { text-decoration: underline; }
+
+    /* ============ TOAST ============ */
+    .toast {
+      position: fixed; bottom: 28px; left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      z-index: 200; padding: 12px 22px; border-radius: 999px;
+      font-size: 13.5px; font-weight: 600;
+      box-shadow: var(--shadow-lg);
+      opacity: 0; pointer-events: none;
+      transition: opacity .3s var(--ease), transform .3s var(--ease);
+      display: flex; align-items: center; gap: 8px;
+      white-space: nowrap;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
+    .toast.success { background: var(--ink); color: #fff; }
+    .toast.error { background: var(--danger); color: #fff; }
+    .toast svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+    /* ============ CURSOR ============ */
+    *, *::before, *::after { cursor: none !important; }
+
+    #customCursor {
+      position: fixed; top: 0; left: 0;
+      width: 140px; height: 140px;
+      pointer-events: none; z-index: 9999;
+      transform-origin: 17px 17px;
+      margin-left: -17px; margin-top: -17px;
+      will-change: transform;
+      animation: cBob 3.8s ease-in-out infinite, cGlow 2.2s ease-in-out infinite;
+      transition: opacity .2s;
+    }
+    @keyframes cBob {
+      0%, 100% { transform: translateY(0) rotate(0deg) scale(1); }
+      33% { transform: translateY(-7px) rotate(-3deg) scale(1.03); }
+      66% { transform: translateY(-4px) rotate(2deg) scale(1.01); }
+    }
+    @keyframes cGlow {
+      0%, 100% { filter: drop-shadow(0 0 6px rgba(255,182,193,0.45)) drop-shadow(0 2px 4px rgba(0,0,0,0.05)); }
+      50% { filter: drop-shadow(0 0 14px rgba(255,182,193,0.75)) drop-shadow(0 2px 6px rgba(0,0,0,0.08)); }
+    }
+
+    .fall-heart {
+      position: fixed; pointer-events: none; z-index: 10000;
+      transform-origin: center;
+      animation: heartFall var(--hd, 1.4s) cubic-bezier(.3,.6,.5,1) forwards;
+    }
+    @keyframes heartFall {
+      0% { opacity: .95; transform: translate(0,0) scale(var(--hs,1)) rotate(var(--hr,0deg)); }
+      70% { opacity: .7; }
+      100% { opacity: 0; transform: translate(var(--hx,0px),var(--hy,60px)) scale(calc(var(--hs,1)*.4)) rotate(var(--hr2,20deg)); }
+    }
+
+    .spark4 {
+      position: fixed; pointer-events: none; z-index: 10001;
+      transform-origin: center;
+      animation: spark4Out var(--sd, .7s) ease-out forwards;
+    }
+    @keyframes spark4Out {
+      0% { opacity: 1; transform: translate(0,0) scale(1.3) rotate(0deg); }
+      70% { opacity: .8; }
+      100% { opacity: 0; transform: translate(var(--sx),var(--sy)) scale(.15) rotate(var(--sr)); }
+    }
+
+    @media(hover:none) {
+      #customCursor { display: none; }
+      *, *::before, *::after { cursor: auto !important; }
+    }
+
+    @media (max-width:500px) {
+      .auth-card { border-radius: var(--radius-md); }
+      .auth-header { padding: 24px 22px 0; }
+      .auth-tabs { margin: 16px 22px 0; }
+      .auth-body { padding: 20px 22px 24px; }
+      .auth-footer { padding: 0 22px 20px; }
+      .field-row { flex-direction: column; gap: 14px; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- NAV -->
+  <nav class="nav" id="mainNav">
+    <a href="index.html" class="logo">
+      <svg viewBox="0 0 24 24" fill="none">
+        <path d="M12 2l2.2 6.8L21 11l-6.8 2.2L12 20l-2.2-6.8L3 11l6.8-2.2L12 2z" fill="#e8729a" />
+      </svg>
+      Inkora
+    </a>
+    <div class="nav-links" id="navLinks">
+      <a href="products.html">Shop</a>
+      <a href="index.html#story">Our Story</a>
+      <a href="index.html#reviews">Reviews</a>
+      <a href="index.html#join">Contact</a>
+    </div>
+    <div class="nav-right">
+      <a href="products.html" class="btn btn-primary btn-sm">Shop Now</a>
+      <button class="nav-toggle" id="navToggle" aria-label="Open navigation menu" aria-expanded="false">
+        <span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- MOBILE NAV -->
+  <div class="mobile-nav-overlay" id="mobileNavOverlay"></div>
+  <div class="mobile-nav" id="mobileNav" role="navigation" aria-label="Mobile navigation">
+    <a href="index.html" data-mobile-link>Home</a>
+    <a href="products.html" data-mobile-link>Shop</a>
+    <a href="index.html#story" data-mobile-link>Our Story</a>
+    <a href="index.html#reviews" data-mobile-link>Reviews</a>
+    <a href="index.html#join" data-mobile-link>Contact</a>
+  </div>
+
+  <!-- AUTH PAGE -->
+  <main class="auth-page">
+    <div class="auth-ghost" aria-hidden="true">Welcome</div>
+
+    <div class="auth-card">
+      <div class="auth-header">
+        <div class="auth-logo">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 2l2.2 6.8L21 11l-6.8 2.2L12 20l-2.2-6.8L3 11l6.8-2.2L12 2z" fill="#e8729a"/></svg>
+          Inkora
+        </div>
+        <p id="authSubtitle">Sign in to your account</p>
+      </div>
+
+      <!-- TABS -->
+      <div class="auth-tabs" id="authTabs">
+        <button class="auth-tab active" id="tabSignin" data-tab="signin">Sign In</button>
+        <button class="auth-tab" id="tabSignup" data-tab="signup">Create Account</button>
+      </div>
+
+      <!-- SIGN IN FORM -->
+      <div class="auth-body" id="authBody">
+        <form class="auth-form" id="signinForm" novalidate>
+          <div class="field">
+            <label for="loginEmail">Email</label>
+            <input id="loginEmail" type="email" placeholder="you@email.com" autocomplete="email" required>
+            <span class="field-error" id="loginEmailErr"></span>
+          </div>
+          <div class="field">
+            <label for="loginPassword">Password</label>
+            <div class="pwd-wrap">
+              <input id="loginPassword" type="password" placeholder="••••••••" autocomplete="current-password" required>
+              <button type="button" class="pwd-toggle" data-target="loginPassword" aria-label="Show password">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+            <span class="field-error" id="loginPasswordErr"></span>
+          </div>
+          <a href="#" class="forgot-link" id="forgotLink">Forgot password?</a>
+          <button type="submit" class="btn btn-accent auth-submit" id="signinBtn">Sign In</button>
+
+          <div class="auth-divider"><span>or</span></div>
+
+          <div class="social-btns">
+            <button type="button" class="social-btn" id="googleBtn">
+              <svg viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+              Google
+            </button>
+            <button type="button" class="social-btn" id="appleBtn">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.53-3.23 0-1.44.62-2.2.44-3.06-.4C4.24 16.7 4.89 10.48 9 10.2c1.27.07 2.15.72 2.9.76.95-.18 1.86-.94 3.04-.84 1.17.1 2.05.63 2.65 1.56-2.79 1.7-2.17 5.08.46 6.36-.43 1.12-.99 2.21-2 3.24zm-3.3-14.06c-.12 1.89-1.69 3.31-3.5 3.22C10.02 7.41 11.68 5.8 13.75 6.22z"/></svg>
+              Apple
+            </button>
+          </div>
+        </form>
+
+        <!-- SIGN UP FORM -->
+        <form class="auth-form hidden" id="signupForm" novalidate>
+          <div class="field">
+            <label for="signupName">Full Name</label>
+            <input id="signupName" type="text" placeholder="Aditi Sharma" autocomplete="name" required>
+            <span class="field-error" id="signupNameErr"></span>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="signupEmail">Email</label>
+              <input id="signupEmail" type="email" placeholder="you@email.com" autocomplete="email" required>
+              <span class="field-error" id="signupEmailErr"></span>
+            </div>
+            <div class="field">
+              <label for="signupPhone">Phone</label>
+              <input id="signupPhone" type="tel" placeholder="98765 43210" autocomplete="tel" required>
+              <span class="field-error" id="signupPhoneErr"></span>
+            </div>
+          </div>
+          <div class="field">
+            <label for="signupPassword">Password</label>
+            <div class="pwd-wrap">
+              <input id="signupPassword" type="password" placeholder="Min 8 characters" autocomplete="new-password" required>
+              <button type="button" class="pwd-toggle" data-target="signupPassword" aria-label="Show password">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+            <span class="field-error" id="signupPasswordErr"></span>
+          </div>
+          <div class="field">
+            <label for="signupConfirm">Confirm Password</label>
+            <div class="pwd-wrap">
+              <input id="signupConfirm" type="password" placeholder="Re-enter password" autocomplete="new-password" required>
+              <button type="button" class="pwd-toggle" data-target="signupConfirm" aria-label="Show password">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+            <span class="field-error" id="signupConfirmErr"></span>
+          </div>
+          <button type="submit" class="btn btn-accent auth-submit" id="signupBtn">Create Account</button>
+        </form>
+      </div>
+
+
+      <div class="auth-footer" id="authFooter">
+        Don't have an account? <a href="#" id="switchToSignup">Create one</a>
+      </div>
+    </div>
+  </main>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast" role="alert" aria-live="assertive"></div>
+
+  <!-- ANIMATED WAND CURSOR -->
+  <div id="customCursor" aria-hidden="true">
+    <svg viewBox="0 0 160 160" width="140" height="140" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="wStick" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#ffdbe6"/><stop offset="50%" stop-color="#ffa6c9"/><stop offset="100%" stop-color="#ff7597"/>
+        </linearGradient>
+        <radialGradient id="wStar" cx="38%" cy="32%" r="68%">
+          <stop offset="0%" stop-color="#fff5f7"/><stop offset="35%" stop-color="#ffccd8"/><stop offset="75%" stop-color="#ffa6c9"/><stop offset="100%" stop-color="#ff7597"/>
+        </radialGradient>
+        <radialGradient id="wGlow" cx="40%" cy="35%" r="60%">
+          <stop offset="0%" stop-color="rgba(255,255,255,0.95)"/><stop offset="100%" stop-color="rgba(255,182,193,0)"/>
+        </radialGradient>
+        <radialGradient id="wSpk" cx="35%" cy="30%" r="70%">
+          <stop offset="0%" stop-color="#fff"/><stop offset="100%" stop-color="#ffccd8"/>
+        </radialGradient>
+      </defs>
+      <line x1="53" y1="53" x2="132" y2="132" stroke="rgba(255,117,151,0.12)" stroke-width="20" stroke-linecap="round"/>
+      <line x1="50" y1="50" x2="130" y2="130" stroke="url(#wStick)" stroke-width="14" stroke-linecap="round"/>
+      <line x1="47" y1="53" x2="127" y2="133" stroke="rgba(255,255,255,0.7)" stroke-width="3.5" stroke-linecap="round"/>
+      <path d="M20 20 L38 28 L53 15 L51 35 L68 44 L49 49 L44 68 L35 51 L15 53 L28 38 Z" fill="#fff5f7" stroke="#ffd8e2" stroke-width="10" stroke-linejoin="round" opacity="0.35"/>
+      <path d="M20 20 L38 28 L53 15 L51 35 L68 44 L49 49 L44 68 L35 51 L15 53 L28 38 Z" fill="url(#wStar)" stroke="#ffa6c9" stroke-width="2.5" stroke-linejoin="round"/>
+      <path d="M20 20 L38 28 L53 15 L51 35 L68 44 L49 49 L44 68 L35 51 L15 53 L28 38 Z" fill="url(#wGlow)" opacity="0.85"/>
+      <ellipse cx="30" cy="27" rx="8" ry="5" fill="rgba(255,255,255,0.85)"/>
+      <circle cx="40" cy="40" r="7.5" fill="rgba(255,255,255,0.95)"/>
+      <circle cx="38" cy="37" r="3" fill="white"/>
+      <path d="M73 13 C73 13 75 21 82 21 C75 21 73 29 73 29 C73 29 71 21 64 21 C71 21 73 13 73 13 Z" fill="url(#wSpk)"/>
+      <path d="M87 31 C87 31 88.5 37 93 37 C88.5 37 87 43 87 43 C87 43 85.5 37 81 37 C85.5 37 87 31 87 31 Z" fill="url(#wSpk)" opacity="0.85"/>
+      <path d="M53 5 C53 5 54 9 57 9 C54 9 53 13 53 13 C53 13 52 9 49 9 C52 9 53 5 53 5 Z" fill="url(#wSpk)" opacity="0.75"/>
+      <path d="M10 44 C10 44 11 48 14 48 C11 48 10 52 10 52 C10 52 9 48 6 48 C9 48 10 44 10 44 Z" fill="url(#wSpk)" opacity="0.72"/>
+    </svg>
+  </div>
+
+  <script>
+  (function() {
+    'use strict';
+
+    /* ─── DUAL MODE DATABASE MOCK SETUP ─── */
+    const IS_HTTP = window.location.protocol.startsWith('http');
+    function getLocalUsers() {
+      try { return JSON.parse(localStorage.getItem('inkora_mock_users') || '[]'); }
+      catch (e) { return []; }
+    }
+    function saveLocalUsers(users) { localStorage.setItem('inkora_mock_users', JSON.stringify(users)); }
+    function getLocalSession() {
+      try { return JSON.parse(localStorage.getItem('inkora_mock_session') || 'null'); }
+      catch (e) { return null; }
+    }
+    function setLocalSession(user) { localStorage.setItem('inkora_mock_session', JSON.stringify(user)); }
+
+    /* ─── HELPERS ─── */
+    const $ = id => document.getElementById(id);
+    let toastTimer = null;
+
+    function showToast(msg, type) {
+      const t = $('toast');
+      const icon = type === 'error'
+        ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 6l12 12M18 6L6 18"/></svg>'
+        : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 12l5 5L20 6"/></svg>';
+      t.className = 'toast ' + type;
+      t.innerHTML = icon + ' ' + msg;
+      t.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => t.classList.remove('show'), 3200);
+    }
+
+    function setError(id, msg) {
+      const el = $(id);
+      if (el) { el.textContent = msg; }
+      const input = el?.previousElementSibling;
+      if (input?.tagName === 'INPUT') input.classList.toggle('error', !!msg);
+      // Handle pwd-wrap case
+      const wrap = el?.previousElementSibling;
+      if (wrap?.classList?.contains('pwd-wrap')) {
+        wrap.querySelector('input')?.classList.toggle('error', !!msg);
+      }
+    }
+
+    function clearErrors(formId) {
+      $(formId).querySelectorAll('.field-error').forEach(e => e.textContent = '');
+      $(formId).querySelectorAll('input.error').forEach(e => e.classList.remove('error'));
+    }
+
+    function validateEmail(e) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
+    function validatePhone(p) { return /^[\d\s\-+()]{7,15}$/.test(p); }
+
+    /* ─── TAB SWITCHING ─── */
+    const tabSignin = $('tabSignin');
+    const tabSignup = $('tabSignup');
+    const signinForm = $('signinForm');
+    const signupForm = $('signupForm');
+    const authSubtitle = $('authSubtitle');
+    const authFooter = $('authFooter');
+
+    function switchTab(tab) {
+      if (tab === 'signin') {
+        tabSignin.classList.add('active');
+        tabSignup.classList.remove('active');
+        signinForm.classList.remove('hidden');
+        signupForm.classList.add('hidden');
+        // Re-trigger animation
+        signinForm.style.animation = 'none';
+        signinForm.offsetHeight;
+        signinForm.style.animation = '';
+        authSubtitle.textContent = 'Sign in to your account';
+        authFooter.innerHTML = 'Don\'t have an account? <a href="#" id="switchToSignup">Create one</a>';
+        $('switchToSignup').addEventListener('click', e => { e.preventDefault(); switchTab('signup'); });
+      } else {
+        tabSignup.classList.add('active');
+        tabSignin.classList.remove('active');
+        signupForm.classList.remove('hidden');
+        signinForm.classList.add('hidden');
+        signupForm.style.animation = 'none';
+        signupForm.offsetHeight;
+        signupForm.style.animation = '';
+        authSubtitle.textContent = 'Create your Inkora account';
+        authFooter.innerHTML = 'Already have an account? <a href="#" id="switchToSignin">Sign in</a>';
+        $('switchToSignin').addEventListener('click', e => { e.preventDefault(); switchTab('signin'); });
+      }
+    }
+
+
+
+    tabSignin.addEventListener('click', () => switchTab('signin'));
+    tabSignup.addEventListener('click', () => switchTab('signup'));
+    $('switchToSignup').addEventListener('click', e => { e.preventDefault(); switchTab('signup'); });
+
+    // Check URL params for tab
+    if (new URLSearchParams(window.location.search).get('tab') === 'signup') switchTab('signup');
+
+    /* ─── SIGN IN ─── */
+    signinForm.addEventListener('submit', async e => {
+      e.preventDefault();
+      clearErrors('signinForm');
+      const email = $('loginEmail').value.trim();
+      const password = $('loginPassword').value;
+      let valid = true;
+
+      if (!email) { setError('loginEmailErr', 'Email is required'); valid = false; }
+      else if (!validateEmail(email)) { setError('loginEmailErr', 'Enter a valid email'); valid = false; }
+      if (!password) { setError('loginPasswordErr', 'Password is required'); valid = false; }
+
+      if (!valid) return;
+
+      const btn = $('signinBtn');
+      btn.classList.add('loading'); btn.textContent = 'Signing in';
+
+      if (IS_HTTP) {
+        try {
+          const res = await fetch('/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+          });
+          const data = await res.json();
+
+          if (res.ok && data.success) {
+            showToast('Welcome back, ' + data.user.name + '!', 'success');
+            setTimeout(() => { window.location.href = 'index.html'; }, 1200);
+          } else {
+            showToast(data.error || 'Login failed', 'error');
+            btn.classList.remove('loading'); btn.textContent = 'Sign In';
+          }
+        } catch (err) {
+          showToast('Server unavailable. Run: node server.js', 'error');
+          btn.classList.remove('loading'); btn.textContent = 'Sign In';
+        }
+      } else {
+        setTimeout(() => {
+          const users = getLocalUsers();
+          const user = users.find(u => u.email.toLowerCase() === email.toLowerCase());
+          if (!user || user.password !== password) {
+            showToast('Incorrect email or password.', 'error');
+            btn.classList.remove('loading'); btn.textContent = 'Sign In';
+            return;
+          }
+          setLocalSession({ name: user.name, email: user.email, phone: user.phone });
+          showToast('Welcome back, ' + user.name + '! ✨', 'success');
+          setTimeout(() => { window.location.href = 'index.html'; }, 1200);
+        }, 800);
+      }
+    });
+
+    /* ─── SIGN UP ─── */
+    signupForm.addEventListener('submit', async e => {
+      e.preventDefault();
+      clearErrors('signupForm');
+      const name = $('signupName').value.trim();
+      const email = $('signupEmail').value.trim();
+      const phone = $('signupPhone').value.trim();
+      const password = $('signupPassword').value;
+      const confirm = $('signupConfirm').value;
+      let valid = true;
+
+      if (!name || name.length < 2) { setError('signupNameErr', 'Enter your full name'); valid = false; }
+      if (!email) { setError('signupEmailErr', 'Email is required'); valid = false; }
+      else if (!validateEmail(email)) { setError('signupEmailErr', 'Enter a valid email'); valid = false; }
+      if (!phone) { setError('signupPhoneErr', 'Phone is required'); valid = false; }
+      else if (!validatePhone(phone)) { setError('signupPhoneErr', 'Enter a valid phone'); valid = false; }
+      if (!password) { setError('signupPasswordErr', 'Password is required'); valid = false; }
+      else if (password.length < 8) { setError('signupPasswordErr', 'Min 8 characters'); valid = false; }
+      if (password !== confirm) { setError('signupConfirmErr', 'Passwords don\'t match'); valid = false; }
+
+      if (!valid) return;
+
+      const btn = $('signupBtn');
+      btn.classList.add('loading'); btn.textContent = 'Creating account';
+
+      if (IS_HTTP) {
+        try {
+          const res = await fetch('/api/signup', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, email, phone, password })
+          });
+          const data = await res.json();
+
+          if (res.ok && data.success) {
+            showToast('Account created! Welcome, ' + data.user.name + ' ✨', 'success');
+            setTimeout(() => { window.location.href = 'index.html'; }, 1400);
+          } else {
+            showToast(data.error || 'Signup failed', 'error');
+            btn.classList.remove('loading'); btn.textContent = 'Create Account';
+          }
+        } catch (err) {
+          showToast('Server unavailable. Run: node server.js', 'error');
+          btn.classList.remove('loading'); btn.textContent = 'Create Account';
+        }
+      } else {
+        setTimeout(() => {
+          const users = getLocalUsers();
+          if (users.some(u => u.email.toLowerCase() === email.toLowerCase())) {
+            showToast('An account with this email already exists.', 'error');
+            btn.classList.remove('loading'); btn.textContent = 'Create Account';
+            return;
+          }
+          const newUser = { name, email, phone, password };
+          users.push(newUser);
+          saveLocalUsers(users);
+          setLocalSession({ name, email, phone });
+          showToast('Account created! Welcome, ' + name + ' ✨', 'success');
+          setTimeout(() => { window.location.href = 'index.html'; }, 1400);
+        }, 800);
+      }
+    });
+
+    /* ─── PASSWORD TOGGLES ─── */
+    document.querySelectorAll('.pwd-toggle').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const input = $(btn.dataset.target);
+        if (input.type === 'password') {
+          input.type = 'text';
+          btn.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
+        } else {
+          input.type = 'password';
+          btn.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+        }
+      });
+    });
+
+    /* ─── FORGOT PASSWORD ─── */
+    $('forgotLink').addEventListener('click', e => {
+      e.preventDefault();
+      showToast('Password reset is not available in this demo', 'error');
+    });
+
+    /* ─── SOCIAL BTNS ─── */
+    $('googleBtn').addEventListener('click', () => showToast('Google login is coming soon!', 'error'));
+    $('appleBtn').addEventListener('click', () => showToast('Apple login is coming soon!', 'error'));
+
+    /* ─── CLEAR ERRORS ON INPUT ─── */
+    document.querySelectorAll('.auth-form input').forEach(input => {
+      input.addEventListener('input', () => {
+        input.classList.remove('error');
+        const errEl = input.closest('.field')?.querySelector('.field-error');
+        if (errEl) errEl.textContent = '';
+      });
+    });
+
+    /* ─── MOBILE NAV ─── */
+    const navToggle = $('navToggle');
+    const mobileNav = $('mobileNav');
+    const mobileNavOverlay = $('mobileNavOverlay');
+    function openMobileNav() {
+      navToggle.classList.add('active'); navToggle.setAttribute('aria-expanded','true');
+      mobileNav.classList.add('open'); mobileNavOverlay.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeMobileNav() {
+      navToggle.classList.remove('active'); navToggle.setAttribute('aria-expanded','false');
+      mobileNav.classList.remove('open'); mobileNavOverlay.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    navToggle.addEventListener('click', () => mobileNav.classList.contains('open') ? closeMobileNav() : openMobileNav());
+    mobileNavOverlay.addEventListener('click', closeMobileNav);
+    mobileNav.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMobileNav));
+
+
+
+    /* ─── CHECK IF ALREADY LOGGED IN ─── */
+    if (IS_HTTP) {
+      fetch('/api/user').then(r => r.json()).then(data => {
+        if (data.loggedIn) { window.location.href = 'index.html'; }
+      }).catch(() => {});
+    } else {
+      const session = getLocalSession();
+      if (session) { window.location.href = 'index.html'; }
+    }
+
+  })();
+  </script>
+
+  <!-- CURSOR + HEARTS SCRIPT -->
+  <script>
+  (function() {
+    var cur = document.getElementById('customCursor');
+    var cx = -300, cy = -300, raf = null;
+
+    document.addEventListener('mousemove', function(e) {
+      cx = e.clientX; cy = e.clientY;
+      if (!raf) raf = requestAnimationFrame(function() { raf = null; cur.style.left = cx+'px'; cur.style.top = cy+'px'; });
+    });
+    document.addEventListener('mouseleave', function() { cur.style.opacity = '0'; });
+    document.addEventListener('mouseenter', function() { cur.style.opacity = '1'; });
+
+    function heartSVG(size, opacity) {
+      var s = size||14, o = opacity||1;
+      return '<svg viewBox="0 0 16 16" width="'+s+'" height="'+s+'" xmlns="http://www.w3.org/2000/svg" style="opacity:'+o+'" fill="none">'+
+        '<rect x="2" y="3" width="4" height="2" fill="#c97b98"/><rect x="8" y="3" width="4" height="2" fill="#c97b98"/>'+
+        '<rect x="1" y="5" width="6" height="3" fill="#e8a0bc"/><rect x="7" y="5" width="6" height="3" fill="#e8a0bc"/>'+
+        '<rect x="0" y="5" width="2" height="3" fill="#c97b98"/><rect x="12" y="5" width="2" height="3" fill="#c97b98"/>'+
+        '<rect x="0" y="8" width="14" height="2" fill="#e8a0bc"/><rect x="1" y="10" width="12" height="2" fill="#e8a0bc"/>'+
+        '<rect x="2" y="12" width="10" height="1" fill="#c97b98"/><rect x="3" y="13" width="8" height="1" fill="#c97b98"/>'+
+        '<rect x="4" y="14" width="6" height="1" fill="#c97b98"/><rect x="5" y="15" width="4" height="1" fill="#c97b98"/>'+
+        '<rect x="6" y="16" width="2" height="1" fill="#c97b98"/>'+
+        '<rect x="2" y="5" width="3" height="2" fill="#fce4ec"/><rect x="3" y="6" width="2" height="1" fill="white"/>'+
+        '<rect x="9" y="5" width="2" height="1" fill="#fce4ec"/></svg>';
+    }
+
+    var heartTimer = null;
+    function startHeartDrip() {
+      if (heartTimer) return;
+      heartTimer = setInterval(function() {
+        if (cx < -200) return;
+        var el = document.createElement('div');
+        el.className = 'fall-heart';
+        var sz = 12+Math.random()*8;
+        var hx = (Math.random()-.5)*30;
+        var hy = 55+Math.random()*45;
+        var hd = (1.1+Math.random()*.7)+'s';
+        var hs = .7+Math.random()*.5;
+        var hr = (Math.random()*20-10)+'deg';
+        var hr2 = (Math.random()*40-20)+'deg';
+        var ox = cx+(Math.random()-.5)*12;
+        var oy = cy+(Math.random()-.5)*10+6;
+        el.style.cssText = ['left:'+ox+'px','top:'+oy+'px','width:'+sz+'px','height:'+sz+'px',
+          '--hx:'+hx+'px','--hy:'+hy+'px','--hd:'+hd,'--hs:'+hs,'--hr:'+hr,'--hr2:'+hr2].join(';');
+        el.innerHTML = heartSVG(sz, .85+Math.random()*.15);
+        document.body.appendChild(el);
+        setTimeout(function(){el.parentNode&&el.parentNode.removeChild(el);},2000);
+      }, 280);
+    }
+    startHeartDrip();
+
+    var spkPath='M0 -11 C-1.5 -4 -1.5 -4 -4.5 0 C-1.5 4 -1.5 4 0 11 C1.5 4 1.5 4 4.5 0 C1.5 -4 1.5 -4 0 -11 Z';
+    var spkColors=['#ffdbe6','#ffb3c6','#ffa6c9','#ffccd8','#fcd5e2','#f8bbd0','#ff9eb5','#ff6b8b','#ff4f7b','#ffa3b1','#fff5f7','#fff0f3','#ff4081','#e91e63','#f06292','#ff80ab','#d81b60','#fbc2c8'];
+
+    function spawnSparkles(x,y){
+      var count=18;
+      for(var i=0;i<count;i++){
+        (function(i){
+          var el=document.createElement('div');
+          el.className='spark4';
+          var angle=(i/count)*Math.PI*2+(Math.random()-.5)*.5;
+          var dist=35+Math.random()*65;
+          var size=(10+Math.random()*16)+'px';
+          var color=spkColors[Math.floor(Math.random()*spkColors.length)];
+          el.style.cssText=['left:'+x+'px','top:'+y+'px','width:'+size,'height:'+size,
+            '--sx:'+(Math.cos(angle)*dist)+'px','--sy:'+(Math.sin(angle)*dist)+'px',
+            '--sr:'+(Math.random()*360-180)+'deg','--sd:'+(0.45+Math.random()*0.4)+'s',
+            'animation-delay:'+(Math.random()*0.05)+'s'].join(';');
+          el.innerHTML='<svg viewBox="-12 -12 24 24" width="100%" height="100%" fill="'+color+'" xmlns="http://www.w3.org/2000/svg"><path d="'+spkPath+'"/></svg>';
+          document.body.appendChild(el);
+          setTimeout(function(){el.parentNode&&el.parentNode.removeChild(el);},1000);
+        })(i);
+      }
+    }
+
+    document.addEventListener('mousedown', function(e) {
+      cur.style.transform='scale(0.88) rotate(-8deg)';
+      cur.style.animationPlayState='paused';
+      spawnSparkles(e.clientX, e.clientY);
+    });
+    document.addEventListener('mouseup', function() {
+      cur.style.transform='';
+      cur.style.animationPlayState='running';
+    });
+  })();
+  </script>
+</body>
+</html>

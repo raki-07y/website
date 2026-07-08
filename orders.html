@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Orders — Inkora</title>
+  <meta name="description" content="Track your Inkora kawaii stationery orders.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DynaPuff:wght@400..700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --sky-1: #fdf2f5;
+      --sky-2: #fce4ec;
+      --cloud: #ffffff;
+      --ink: #2c1f2e;
+      --ink-soft: #6b5570;
+      --ink-faint: #9c8a9f;
+      --paper: #fffbfc;
+      --line: #f0e0e6;
+      --accent: #e8729a;
+      --accent-deep: #d4497a;
+      --accent-glow: #fbb4cc;
+      --lilac: #dcb8e8;
+      --silver-1: #fdf5f7;
+      --silver-2: #e0cdd4;
+      --radius-sm: 10px;
+      --radius-md: 18px;
+      --radius-lg: 28px;
+      --shadow-sm: 0 2px 10px rgba(28,35,51,.06);
+      --shadow-md: 0 14px 34px rgba(28,35,51,.10);
+      --ease: cubic-bezier(.22,.9,.32,1);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Manrope', sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+    a { color: inherit; text-decoration: none; }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky; top: 0; z-index: 50;
+      background: rgba(255,251,252,.88);
+      backdrop-filter: blur(14px);
+      border-bottom: 1.5px solid var(--line);
+      padding: 0 24px;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 62px;
+    }
+    .nav-logo {
+      font-family: 'DynaPuff', cursive;
+      font-size: 22px;
+      background: linear-gradient(135deg, var(--accent-deep), var(--lilac));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .nav-links { display: flex; gap: 10px; align-items: center; }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 9px 20px; border-radius: 50px; font-size: 13.5px; font-weight: 700;
+      border: none; cursor: pointer; transition: all .22s var(--ease); text-decoration: none;
+    }
+    .btn-accent { background: var(--accent); color: #fff; }
+    .btn-accent:hover { background: var(--accent-deep); transform: translateY(-1px); }
+    .btn-ghost { background: var(--silver-1); color: var(--ink); border: 1.5px solid var(--line); }
+    .btn-ghost:hover { background: var(--sky-2); }
+
+    /* ── PAGE ── */
+    .wrap { max-width: 820px; margin: 0 auto; padding: 0 20px; }
+
+    .page-hero {
+      background: linear-gradient(135deg, #fdf2f5, #fce4ec 60%, #f3e4f8);
+      padding: 52px 20px 40px;
+      text-align: center;
+    }
+    .page-hero h1 {
+      font-family: 'DynaPuff', cursive;
+      font-size: clamp(26px, 4vw, 36px);
+      background: linear-gradient(135deg, var(--accent-deep), #b47ec8);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+    .page-hero p { color: var(--ink-soft); font-size: 14.5px; }
+
+    /* ── ORDERS ── */
+    .orders-list { padding: 32px 20px 60px; max-width: 820px; margin: 0 auto; }
+
+    .order-card {
+      background: #fff;
+      border: 1.5px solid var(--line);
+      border-radius: var(--radius-lg);
+      margin-bottom: 24px;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      transition: box-shadow .22s;
+    }
+    .order-card:hover { box-shadow: var(--shadow-md); }
+
+    .order-header {
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;
+      padding: 18px 24px;
+      background: var(--silver-1);
+      border-bottom: 1.5px solid var(--line);
+    }
+    .order-header-left { display: flex; flex-direction: column; gap: 2px; }
+    .order-num { font-family: 'DynaPuff', cursive; font-size: 15px; color: var(--accent-deep); }
+    .order-date { font-size: 12px; color: var(--ink-faint); }
+    .order-total { font-weight: 800; font-size: 17px; color: var(--ink); }
+
+    .order-status-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 5px 14px; border-radius: 50px; font-size: 12px; font-weight: 700;
+    }
+    .badge-processing  { background: #fff8e1; color: #f59f00; }
+    .badge-shipped     { background: #e3f2fd; color: #1e6bb8; }
+    .badge-out         { background: #f3e5f5; color: #7b1fa2; }
+    .badge-delivered   { background: #e8f5e9; color: #2e7d32; }
+
+    .order-body { padding: 20px 24px; }
+
+    /* items list */
+    .order-items { margin-bottom: 20px; }
+    .order-item {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 7px 0;
+      border-bottom: 1px dashed var(--line);
+      font-size: 13.5px;
+    }
+    .order-item:last-child { border-bottom: none; }
+    .order-item-name { color: var(--ink); font-weight: 600; }
+    .order-item-qty  { color: var(--ink-faint); font-size: 12px; }
+    .order-item-price { font-weight: 700; }
+
+    /* delivery address */
+    .order-addr {
+      background: var(--silver-1);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      font-size: 12.5px;
+      color: var(--ink-soft);
+      margin-bottom: 20px;
+      display: flex; gap: 8px; align-items: flex-start;
+    }
+    .order-addr svg { flex-shrink: 0; margin-top: 2px; }
+
+    /* tracking timeline */
+    .tracking-title { font-size: 12px; font-weight: 700; color: var(--ink-soft); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 16px; }
+    .tracking-steps {
+      display: flex; align-items: flex-start; gap: 0;
+      position: relative;
+    }
+    .tracking-step {
+      flex: 1; display: flex; flex-direction: column; align-items: center; position: relative;
+    }
+    .tracking-step::before {
+      content: '';
+      position: absolute; top: 14px; left: 50%; right: -50%;
+      height: 3px; background: var(--line);
+      z-index: 0;
+    }
+    .tracking-step:last-child::before { display: none; }
+    .tracking-step.done::before { background: var(--accent-glow); }
+
+    .step-dot {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: var(--line); border: 3px solid #fff;
+      display: flex; align-items: center; justify-content: center;
+      z-index: 1; position: relative;
+      font-size: 13px;
+      transition: all .4s var(--ease);
+    }
+    .tracking-step.done .step-dot   { background: var(--accent); box-shadow: 0 0 0 4px var(--accent-glow); }
+    .tracking-step.active .step-dot { background: var(--accent-deep); box-shadow: 0 0 0 6px rgba(212,73,122,.2); animation: pulse-dot 1.4s ease infinite; }
+
+    @keyframes pulse-dot {
+      0%, 100% { box-shadow: 0 0 0 4px rgba(212,73,122,.25); }
+      50%       { box-shadow: 0 0 0 10px rgba(212,73,122,.08); }
+    }
+
+    .step-label {
+      margin-top: 8px; font-size: 11px; font-weight: 700; color: var(--ink-faint);
+      text-align: center; line-height: 1.3;
+    }
+    .tracking-step.done .step-label,
+    .tracking-step.active .step-label { color: var(--ink); }
+
+    .step-date {
+      font-size: 10px; color: var(--ink-faint); margin-top: 3px; text-align: center;
+    }
+
+    /* empty state */
+    .empty-state {
+      text-align: center; padding: 80px 20px;
+    }
+    .empty-state .big-icon { font-size: 64px; margin-bottom: 16px; }
+    .empty-state h2 { font-family: 'DynaPuff', cursive; font-size: 22px; margin-bottom: 8px; color: var(--ink); }
+    .empty-state p { color: var(--ink-soft); font-size: 14.5px; margin-bottom: 24px; }
+
+    /* ── TOGGLE DETAILS ── */
+    .toggle-details-btn {
+      background: none; border: none; color: var(--accent); font-size: 12.5px; font-weight: 700;
+      cursor: pointer; padding: 0; margin-top: 4px; display: inline-flex; align-items: center; gap: 4px;
+    }
+    .toggle-details-btn:hover { color: var(--accent-deep); }
+    .order-details { display: none; }
+    .order-details.open { display: block; }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a href="index.html" class="nav-logo">Inkora ✦</a>
+    <div class="nav-links">
+      <a href="products.html" class="btn btn-ghost">← Shop</a>
+      <a href="login.html" class="btn btn-accent" id="authNavBtn">Sign In</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <div class="page-hero">
+    <h1>📦 My Orders</h1>
+    <p>Track your adorable Inkora packages on their way to you!</p>
+  </div>
+
+  <!-- ORDERS -->
+  <div class="orders-list" id="ordersList">
+    <!-- filled by JS -->
+  </div>
+
+  <script>
+  (function () {
+    'use strict';
+
+    // ── TRACKING STAGES ──
+    const STAGES = [
+      { key: 'placed',    label: 'Order\nPlaced',      icon: '✅' },
+      { key: 'packed',    label: 'Packed &\nReady',     icon: '📦' },
+      { key: 'shipped',   label: 'Shipped',             icon: '🚚' },
+      { key: 'out',       label: 'Out for\nDelivery',   icon: '🛵' },
+      { key: 'delivered', label: 'Delivered',           icon: '🎉' },
+    ];
+
+    function getStageIndex(orderDate) {
+      const mins = (Date.now() - new Date(orderDate)) / 60000;
+      if (mins < 1)   return 0; // placed
+      if (mins < 3)   return 1; // packed
+      if (mins < 8)   return 2; // shipped
+      if (mins < 15)  return 3; // out
+      return 4;                  // delivered
+    }
+
+    function fmtDate(iso) {
+      return new Date(iso).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+    }
+
+    function money(n) { return '₹' + Number(n).toLocaleString('en-IN'); }
+
+    function badgeClass(stageIdx) {
+      if (stageIdx <= 1) return 'badge-processing';
+      if (stageIdx === 2) return 'badge-shipped';
+      if (stageIdx === 3) return 'badge-out';
+      return 'badge-delivered';
+    }
+    function badgeLabel(stageIdx) {
+      if (stageIdx <= 1) return '⏳ Processing';
+      if (stageIdx === 2) return '🚚 Shipped';
+      if (stageIdx === 3) return '🛵 Out for Delivery';
+      return '✅ Delivered';
+    }
+
+    function renderOrderCard(order, idx) {
+      const stageIdx = getStageIndex(order.date);
+
+      // Build timeline HTML
+      const stepsHtml = STAGES.map((s, i) => {
+        let cls = 'tracking-step';
+        if (i < stageIdx) cls += ' done';
+        else if (i === stageIdx) cls += ' active';
+        return `
+          <div class="${cls}">
+            <div class="step-dot">${i <= stageIdx ? s.icon : ''}</div>
+            <div class="step-label">${s.label.replace('\n', '<br>')}</div>
+            ${i <= stageIdx ? `<div class="step-date">${i === 0 ? fmtDate(order.date).split(',')[0] : ''}</div>` : ''}
+          </div>`;
+      }).join('');
+
+      // Build items HTML
+      const itemsHtml = (order.items || []).map(it => `
+        <div class="order-item">
+          <div>
+            <div class="order-item-name">${it.name}</div>
+            <div class="order-item-qty">Qty: ${it.qty}</div>
+          </div>
+          <div class="order-item-price">${money(it.price * it.qty)}</div>
+        </div>`).join('');
+
+      const addrHtml = order.address && order.address.line1 ? `
+        <div class="order-addr">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span>${order.address.line1}, ${order.address.city}, ${order.address.state} - ${order.address.pincode}</span>
+        </div>` : '';
+
+      return `
+        <div class="order-card" id="order-${idx}">
+          <div class="order-header">
+            <div class="order-header-left">
+              <div class="order-num">#${order.id}</div>
+              <div class="order-date">${fmtDate(order.date)}</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+              <span class="order-status-badge ${badgeClass(stageIdx)}">${badgeLabel(stageIdx)}</span>
+              <div class="order-total">${money(order.total)}</div>
+            </div>
+          </div>
+          <div class="order-body">
+            <div class="tracking-title">Live Tracking</div>
+            <div class="tracking-steps">${stepsHtml}</div>
+
+            <button class="toggle-details-btn" onclick="toggleDetails(${idx})">
+              <span id="toggle-label-${idx}">▼ Show order details</span>
+            </button>
+            <div class="order-details" id="details-${idx}">
+              <div style="height:16px;"></div>
+              ${addrHtml}
+              <div class="order-items">${itemsHtml}</div>
+              <div style="text-align:right;font-size:13px;color:var(--ink-soft);">
+                Total: <strong style="color:var(--ink);font-size:15px;">${money(order.total)}</strong>
+              </div>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    function render() {
+      const list = document.getElementById('ordersList');
+
+      const displayOrders = (orders) => {
+        if (orders.length === 0) {
+          list.innerHTML = `
+            <div class="empty-state">
+              <div class="big-icon">🛍️</div>
+              <h2>No orders yet!</h2>
+              <p>Looks like you haven't placed any orders. Head to the shop and treat yourself!</p>
+              <a href="products.html" class="btn btn-accent">Browse Products</a>
+            </div>`;
+          return;
+        }
+        list.innerHTML = orders.map((o, i) => renderOrderCard(o, i)).join('');
+      };
+
+      if (IS_HTTP) {
+        fetch('/api/orders')
+          .then(r => r.json())
+          .then(data => {
+            displayOrders(data.orders || []);
+          })
+          .catch(() => {
+            const orders = JSON.parse(localStorage.getItem('inkora_orders') || '[]');
+            displayOrders(orders);
+          });
+      } else {
+        const orders = JSON.parse(localStorage.getItem('inkora_orders') || '[]');
+        displayOrders(orders);
+      }
+
+      setTimeout(() => { render(); }, 60000);
+    }
+
+    window.toggleDetails = function (idx) {
+      const el = document.getElementById('details-' + idx);
+      const label = document.getElementById('toggle-label-' + idx);
+      const open = el.classList.toggle('open');
+      label.textContent = open ? '▲ Hide order details' : '▼ Show order details';
+    };
+
+    const IS_HTTP = window.location.protocol.startsWith('http');
+    const authBtn = document.getElementById('authNavBtn');
+    if (IS_HTTP) {
+      fetch('/api/user').then(r => r.json()).then(d => {
+        if (d.loggedIn) {
+          authBtn.textContent = d.user.name.split(' ')[0];
+          authBtn.href = 'products.html';
+        }
+      }).catch(() => {});
+    } else {
+      const s = JSON.parse(localStorage.getItem('inkora_mock_session') || 'null');
+      if (s) { authBtn.textContent = s.name.split(' ')[0]; authBtn.href = 'products.html'; }
+    }
+
+    render();
+  })();
+  </script>
+</body>
+</html>
