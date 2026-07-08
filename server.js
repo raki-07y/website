@@ -56,7 +56,11 @@ function parseCSVLine(line) {
 // Helper to read CSV rows
 function readCSV(filepath, headers) {
   if (!fs.existsSync(filepath)) {
-    fs.writeFileSync(filepath, headers.join(',') + '\n', 'utf8');
+    try {
+      fs.writeFileSync(filepath, headers.join(',') + '\n', 'utf8');
+    } catch (err) {
+      console.warn(`⚠️ Warning: Failed to initialize file ${filepath}.`, err.message);
+    }
     return [];
   }
   const content = fs.readFileSync(filepath, 'utf8');
@@ -82,7 +86,11 @@ function writeCSV(filepath, headers, rows) {
   const dataLines = rows.map(row => {
     return headers.map(h => escapeCSV(row[h])).join(',');
   }).join('\n');
-  fs.writeFileSync(filepath, headerLine + dataLines + '\n', 'utf8');
+  try {
+    fs.writeFileSync(filepath, headerLine + dataLines + '\n', 'utf8');
+  } catch (err) {
+    console.warn(`⚠️ Warning: Failed to write to file ${filepath}.`, err.message);
+  }
 }
 
 // Initialize files if they don't exist
@@ -386,3 +394,5 @@ app.listen(PORT, () => {
   console.log(`  🛍️   Shop:                 http://localhost:${PORT}/index.html`);
   console.log(`  🔐  Login:                http://localhost:${PORT}/login.html\n`);
 });
+
+module.exports = app;
