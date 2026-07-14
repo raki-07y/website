@@ -353,19 +353,29 @@
         list.innerHTML = orders.map((o, i) => renderOrderCard(o, i)).join('');
       };
 
+      // Always read localStorage orders as the reliable source
+      const localOrders = JSON.parse(localStorage.getItem('inkora_orders') || '[]');
+
       if (IS_HTTP) {
         fetch('/api/orders')
           .then(r => r.json())
           .then(data => {
-            displayOrders(data.orders || []);
+            const serverOrders = data.orders || [];
+            // Merge: start with local orders, add any server-only orders
+            const localIds = new Set(localOrders.map(o => o.id));
+            const merged = [...localOrders];
+            serverOrders.forEach(o => {
+              if (!localIds.has(o.id)) merged.push(o);
+            });
+            // Sort newest first
+            merged.sort((a, b) => new Date(b.date) - new Date(a.date));
+            displayOrders(merged);
           })
           .catch(() => {
-            const orders = JSON.parse(localStorage.getItem('inkora_orders') || '[]');
-            displayOrders(orders);
+            displayOrders(localOrders);
           });
       } else {
-        const orders = JSON.parse(localStorage.getItem('inkora_orders') || '[]');
-        displayOrders(orders);
+        displayOrders(localOrders);
       }
 
       setTimeout(() => { render(); }, 60000);
@@ -380,16 +390,25 @@
 
     const IS_HTTP = window.location.protocol.startsWith('http');
     const authBtn = document.getElementById('authNavBtn');
+    const localSession = JSON.parse(localStorage.getItem('inkora_mock_session') || 'null');
+
     if (IS_HTTP) {
       fetch('/api/user').then(r => r.json()).then(d => {
         if (d.loggedIn) {
           authBtn.textContent = d.user.name.split(' ')[0];
           authBtn.href = 'products.html';
+        } else if (localSession) {
+          authBtn.textContent = localSession.name.split(' ')[0];
+          authBtn.href = 'products.html';
         }
-      }).catch(() => {});
+      }).catch(() => {
+        if (localSession) {
+          authBtn.textContent = localSession.name.split(' ')[0];
+          authBtn.href = 'products.html';
+        }
+      });
     } else {
-      const s = JSON.parse(localStorage.getItem('inkora_mock_session') || 'null');
-      if (s) { authBtn.textContent = s.name.split(' ')[0]; authBtn.href = 'products.html'; }
+      if (localSession) { authBtn.textContent = localSession.name.split(' ')[0]; authBtn.href = 'products.html'; }
     }
 
     render();
