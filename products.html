@@ -772,6 +772,41 @@
     .field-row { display: flex; gap: 12px; }
     .field-row .field { flex: 1; }
 
+    /* Saved address suggestion */
+    .saved-addr-card {
+      background: linear-gradient(135deg, var(--silver-1), #fef0f5);
+      border: 1.5px solid var(--accent-glow);
+      border-radius: 14px;
+      padding: 14px 16px;
+      margin-bottom: 18px;
+      display: none;
+      animation: fadeSlideIn .3s var(--ease);
+    }
+    .saved-addr-card.visible { display: block; }
+    .saved-addr-label {
+      font-size: 11.5px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .06em; color: var(--accent-deep);
+      margin-bottom: 8px; display: flex; align-items: center; gap: 6px;
+    }
+    .saved-addr-text {
+      font-size: 13px; color: var(--ink-soft); line-height: 1.5;
+      margin-bottom: 10px;
+    }
+    .saved-addr-actions { display: flex; gap: 8px; }
+    .saved-addr-actions button {
+      padding: 7px 16px; border-radius: 50px; font-size: 12px; font-weight: 700;
+      border: none; cursor: pointer; transition: all .2s var(--ease);
+      font-family: inherit;
+    }
+    .btn-use-addr { background: var(--accent); color: #fff; }
+    .btn-use-addr:hover { background: var(--accent-deep); transform: translateY(-1px); }
+    .btn-new-addr { background: var(--cloud); color: var(--ink-soft); border: 1.5px solid var(--line) !important; }
+    .btn-new-addr:hover { background: var(--sky-2); }
+    @keyframes fadeSlideIn {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
     .pay-methods { display: flex; gap: 10px; margin-bottom: 16px; }
     .pay-method {
       flex: 1; border: 1.5px solid var(--line);
@@ -1188,6 +1223,15 @@
             </div>
           </div>
         </div>
+        <div id="savedAddrSuggestion" class="saved-addr-card">
+          <div class="saved-addr-label">📍 Saved Address</div>
+          <div class="saved-addr-text" id="savedAddrText"></div>
+          <div class="saved-addr-actions">
+            <button type="button" class="btn-use-addr" id="useSavedAddrBtn">Use this address</button>
+            <button type="button" class="btn-new-addr" id="newAddrBtn">Enter new address</button>
+          </div>
+        </div>
+        <div id="addressFieldsBlock">
         <div class="field">
           <label for="addrLine1">Address Line 1</label>
           <input id="addrLine1" required placeholder="Hostel No. / Flat No. / Street Address" autocomplete="address-line1">
@@ -1208,12 +1252,13 @@
             <input id="addrState" required placeholder="Maharashtra" autocomplete="address-level1">
             <span class="field-error">Please enter your state</span>
           </div>
-          <div class="field">
-            <label for="addrPincode">Pincode</label>
-            <input id="addrPincode" required placeholder="400001" autocomplete="postal-code">
-            <span class="field-error">Enter 6-digit PIN</span>
-          </div>
         </div>
+        <div class="field">
+          <label for="addrPincode">Pincode</label>
+          <input id="addrPincode" required placeholder="400001" autocomplete="postal-code" type="tel" maxlength="6" inputmode="numeric" pattern="[0-9]{6}" style="max-width:180px;">
+          <span class="field-error">Enter 6-digit PIN</span>
+        </div>
+        </div><!-- close addressFieldsBlock -->
         <div class="field" style="flex-direction:row; gap:8px; align-items:center; margin-bottom:18px;">
           <input type="checkbox" id="saveAddrCheck" style="width:auto; margin:0;" checked>
           <label for="saveAddrCheck" style="font-weight:600; font-size:13px; color:var(--ink-soft); cursor:pointer; user-select:none;">Save this address to my profile</label>
@@ -1670,13 +1715,56 @@
         } else {
           if ($('checkoutContactFields')) $('checkoutContactFields').style.display = 'block';
         }
-        // Pre-fill address data if saved
-        if (currentAddress) {
+        // Gather all possible saved addresses
+        function getSavedAddresses() {
+          const addresses = [];
+          // From currentAddress (server / mock)
+          if (currentAddress && currentAddress.line1) {
+            addresses.push(currentAddress);
+          }
+          // From past orders in localStorage
+          try {
+            const pastOrders = JSON.parse(localStorage.getItem('inkora_orders') || '[]');
+            pastOrders.forEach(o => {
+              if (o.address && o.address.line1) {
+                // Avoid exact duplicates
+                const dup = addresses.find(a =>
+                  a.line1 === o.address.line1 && a.city === o.address.city && a.pincode === o.address.pincode
+                );
+                if (!dup) addresses.push(o.address);
+              }
+            });
+          } catch (e) {}
+          return addresses;
+        }
+
+        const savedAddresses = getSavedAddresses();
+        const suggestionCard = $('savedAddrSuggestion');
+        const addressFieldsBlock = $('addressFieldsBlock');
+
+        if (savedAddresses.length > 0) {
+          const addr = savedAddresses[0]; // most recent
+          const parts = [addr.line1, addr.line2, addr.city, addr.state, addr.pincode].filter(Boolean);
+          $('savedAddrText').textContent = parts.join(', ');
+          suggestionCard.classList.add('visible');
+          // Pre-fill with saved address but hide address fields initially
+          if ($('addrLine1')) $('addrLine1').value = addr.line1 || '';
+          if ($('addrLine2')) $('addrLine2').value = addr.line2 || '';
+          if ($('addrCity')) $('addrCity').value = addr.city || '';
+          if ($('addrState')) $('addrState').value = addr.state || '';
+          if ($('addrPincode')) $('addrPincode').value = addr.pincode || '';
+          addressFieldsBlock.style.display = 'none';
+        } else if (currentAddress) {
           if ($('addrLine1')) $('addrLine1').value = currentAddress.line1 || '';
           if ($('addrLine2')) $('addrLine2').value = currentAddress.line2 || '';
           if ($('addrCity')) $('addrCity').value = currentAddress.city || '';
           if ($('addrState')) $('addrState').value = currentAddress.state || '';
           if ($('addrPincode')) $('addrPincode').value = currentAddress.pincode || '';
+          suggestionCard.classList.remove('visible');
+          addressFieldsBlock.style.display = '';
+        } else {
+          suggestionCard.classList.remove('visible');
+          addressFieldsBlock.style.display = '';
         }
 
         renderCheckoutSummary();
@@ -1687,7 +1775,9 @@
         
         setTimeout(() => {
           if (currentUser) {
-            if ($('addrLine1')) $('addrLine1').focus();
+            if (savedAddresses.length > 0) {
+              // Address auto-filled, no need to focus address
+            } else if ($('addrLine1')) $('addrLine1').focus();
           } else {
             if ($('fname')) $('fname').focus();
           }
@@ -1703,6 +1793,22 @@
       $('modalCloseBtn').addEventListener('click', closeCheckout);
       $('successCloseBtn').addEventListener('click', () => { closeCheckout(); });
       checkoutOverlay.addEventListener('click', e => { if (e.target === checkoutOverlay) closeCheckout(); });
+
+      // Saved address suggestion buttons
+      $('useSavedAddrBtn').addEventListener('click', () => {
+        // Address fields are already pre-filled, just keep them hidden
+        $('savedAddrSuggestion').classList.add('visible');
+        $('addressFieldsBlock').style.display = 'none';
+      });
+      $('newAddrBtn').addEventListener('click', () => {
+        // Show address fields, hide suggestion, clear values
+        $('savedAddrSuggestion').classList.remove('visible');
+        $('addressFieldsBlock').style.display = '';
+        ['addrLine1', 'addrLine2', 'addrCity', 'addrState', 'addrPincode'].forEach(id => {
+          if ($(id)) $(id).value = '';
+        });
+        setTimeout(() => { if ($('addrLine1')) $('addrLine1').focus(); }, 100);
+      });
 
       /* Payment method toggle */
       $('payMethods').addEventListener('click', e => {
@@ -1746,6 +1852,11 @@
       ['fname', 'email', 'phone', 'addrLine1', 'addrLine2', 'addrCity', 'addrState', 'addrPincode', 'upi', 'cardnum', 'exp', 'cvc'].forEach(id => {
         const el = $(id);
         if (el) el.addEventListener('input', () => el.classList.remove('error'));
+      });
+
+      // Only allow digits in pincode, enforce max 6
+      $('addrPincode').addEventListener('input', function () {
+        this.value = this.value.replace(/\D/g, '').slice(0, 6);
       });
 
       $('placeOrderBtn').addEventListener('click', () => {
